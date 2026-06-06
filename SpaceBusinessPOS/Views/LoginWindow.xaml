@@ -15,12 +15,12 @@
 
             <!-- Logo / Branding -->
             <StackPanel HorizontalAlignment="Center" Margin="0,0,0,32">
-                <TextBlock HorizontalAlignment="Center" FontSize="36" FontWeight="Black" LetterSpacing="4">
+                <TextBlock HorizontalAlignment="Center" FontSize="36" FontWeight="Black">
                     <Run Text="SPACE" Foreground="#D97B35"/>
                     <Run Text="CODE" Foreground="White"/>
                 </TextBlock>
-                <TextBlock Text="TECHNOLOGIES" HorizontalAlignment="Center"
-                           FontSize="11" FontWeight="SemiBold" LetterSpacing="6"
+                <TextBlock Text="T E C H N O L O G I E S" HorizontalAlignment="Center"
+                           FontSize="10" FontWeight="SemiBold"
                            Foreground="#6B7280" Margin="0,4,0,8"/>
                 <TextBlock Text="Space-Business POS" HorizontalAlignment="Center"
                            FontSize="14" Foreground="#9CA3AF"/>
