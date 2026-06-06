@@ -1,0 +1,73 @@
+name: Build Space-Business POS (C#)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore SpaceBusinessPOS/SpaceBusinessPOS.csproj
+
+      - name: Publish self-contained EXE
+        run: |
+          dotnet publish SpaceBusinessPOS/SpaceBusinessPOS.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:DebugType=embedded `
+            -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Space-Business-POS-CSharp
+          path: publish/SpaceBusinessPOS.exe
+          retention-days: 30
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}.0.0
+          name: "Space-Business POS v${{ github.run_number }} (Windows)"
+          files: publish/SpaceBusinessPOS.exe
+          body: |
+            ## Space-Business POS — Windows Desktop App
+
+            Built with C# / WPF .NET 8
+
+            ### Features
+            - Point of Sale (POS) with cart, barcode scanning, multi-payment
+            - Products management with stock tracking
+            - Categories management
+            - Customer management with loyalty points
+            - Transaction history with refunds
+            - Sales reports with top products & daily data
+            - **User Manager** — create/edit/delete users with roles
+            - **Receipt Designer** — customize header, footer, business info
+            - **Printer Setup** — select any Windows printer, test print
+            - **Accounting** — expense tracking, profit & loss reports
+            - Settings — tax, currency, Supabase cloud sync
+
+            ### Installation
+            1. Download `SpaceBusinessPOS.exe`
+            2. Run it — no installation required (self-contained)
+            3. Default login PIN: **1234**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

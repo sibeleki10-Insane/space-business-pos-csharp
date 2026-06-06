@@ -1,0 +1,223 @@
+<Page x:Class="SpaceBusinessPOS.Views.POSPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:vm="clr-namespace:SpaceBusinessPOS.ViewModels"
+      Background="#111111"
+      FontFamily="Segoe UI">
+
+    <Page.DataContext>
+        <vm:POSViewModel/>
+    </Page.DataContext>
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="380"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: Product Search -->
+        <DockPanel Grid.Column="0" Margin="0,0,12,0">
+            <TextBlock DockPanel.Dock="Top" Text="Point of Sale" Style="{StaticResource SectionHeader}"/>
+
+            <!-- Search + Barcode -->
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Margin="0,0,8,0"
+                         Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                         materialDesign:HintAssist.Hint="Search products..."
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Foreground="White" Background="#232323"/>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="44"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0"
+                             Text="{Binding BarcodeInput, UpdateSourceTrigger=PropertyChanged}"
+                             materialDesign:HintAssist.Hint="Scan barcode..."
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Foreground="White" Background="#232323"/>
+                    <Button Grid.Column="1" Content="→" Margin="4,0,0,0"
+                            Command="{Binding ScanBarcodeCommand}"
+                            Background="#D97B35" Foreground="White" BorderThickness="0"/>
+                </Grid>
+            </Grid>
+
+            <!-- Product Grid -->
+            <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding SearchResults}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Margin="4" Width="160" Height="100"
+                                    Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                    CommandParameter="{Binding}"
+                                    Background="#232323" BorderThickness="0" Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="12">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
+                                                           Foreground="White" TextWrapping="Wrap"
+                                                           MaxHeight="40" FontSize="13"/>
+                                                <TextBlock Foreground="#D97B35" FontWeight="Bold" FontSize="15" Margin="0,6,0,0">
+                                                    <Run Text="{Binding DataContext.CurrencySymbol, RelativeSource={RelativeSource AncestorType=Page}}"/>
+                                                    <Run Text="{Binding Price, StringFormat={}{0:F2}}"/>
+                                                </TextBlock>
+                                                <TextBlock FontSize="11" Foreground="#6B7280">
+                                                    <Run Text="Stock: "/>
+                                                    <Run Text="{Binding StockQuantity}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#2D2D2D"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- Right: Cart -->
+        <Border Grid.Column="1" Background="#1A1A1A" CornerRadius="8" Padding="0">
+            <DockPanel>
+                <!-- Cart Header -->
+                <Border DockPanel.Dock="Top" Padding="16,12" Background="#232323">
+                    <Grid>
+                        <TextBlock Text="Cart" FontSize="16" FontWeight="Bold"/>
+                        <Button HorizontalAlignment="Right" Content="Clear"
+                                Command="{Binding ClearCartCommand}"
+                                Background="Transparent" Foreground="#EF4444" BorderThickness="0"
+                                FontSize="12" Cursor="Hand"/>
+                    </Grid>
+                </Border>
+
+                <!-- Customer Select -->
+                <ComboBox DockPanel.Dock="Top" Margin="12,8"
+                          ItemsSource="{Binding Customers}"
+                          SelectedItem="{Binding SelectedCustomer}"
+                          DisplayMemberPath="Name"
+                          materialDesign:HintAssist.Hint="Select customer (optional)"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          Foreground="White" Background="#232323"/>
+
+                <!-- Cart Items -->
+                <ScrollViewer DockPanel.Dock="Top" Height="280" Margin="0,4,0,0" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Cart}" Margin="8,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#232323" CornerRadius="6" Margin="0,3" Padding="10,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding ProductName}" FontWeight="SemiBold" FontSize="13"/>
+                                            <TextBlock Foreground="#9CA3AF" FontSize="11">
+                                                <Run Text="{Binding DataContext.CurrencySymbol, RelativeSource={RelativeSource AncestorType=Page}}"/>
+                                                <Run Text="{Binding UnitPrice, StringFormat={}{0:F2}}"/>
+                                                <Run Text=" each"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Content="-" Width="28" Height="28"
+                                                    Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="#374151" Foreground="White" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand"/>
+                                            <TextBlock Text="{Binding Quantity}" Width="28"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       TextAlignment="Center" FontWeight="Bold"/>
+                                            <Button Content="+" Width="28" Height="28"
+                                                    Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="#D97B35" Foreground="White" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand"/>
+                                            <Button Content="×" Width="28" Height="28" Margin="4,0,0,0"
+                                                    Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                    CommandParameter="{Binding}"
+                                                    Background="#EF4444" Foreground="White" BorderThickness="0"
+                                                    FontSize="14" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Totals -->
+                <Border DockPanel.Dock="Bottom" Padding="16,12" Background="#232323" CornerRadius="0,0,8,8">
+                    <StackPanel>
+                        <!-- Discount -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Discount:" VerticalAlignment="Center" Foreground="#9CA3AF"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding DiscountAmount, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Foreground="White" Background="#1A1A1A" FontSize="13"/>
+                        </Grid>
+
+                        <Separator Background="#374151" Margin="0,4,0,8"/>
+                        <Grid Margin="0,2"><TextBlock Text="Subtotal:" Foreground="#9CA3AF"/><TextBlock HorizontalAlignment="Right" Foreground="White"><Run Text="{Binding CurrencySymbol}"/><Run Text="{Binding Subtotal, StringFormat={}{0:F2}}"/></TextBlock></Grid>
+                        <Grid Margin="0,2"><TextBlock Text="Tax:" Foreground="#9CA3AF"/><TextBlock HorizontalAlignment="Right" Foreground="White"><Run Text="{Binding CurrencySymbol}"/><Run Text="{Binding TaxAmount, StringFormat={}{0:F2}}"/></TextBlock></Grid>
+                        <Separator Background="#374151" Margin="0,6"/>
+                        <Grid Margin="0,2"><TextBlock Text="TOTAL:" FontWeight="Bold" FontSize="16"/><TextBlock HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Foreground="#D97B35"><Run Text="{Binding CurrencySymbol}"/><Run Text="{Binding Total, StringFormat={}{0:F2}}"/></TextBlock></Grid>
+
+                        <!-- Payment Method -->
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,8">
+                            <RadioButton Content="Cash" IsChecked="{Binding PaymentMethod, Converter={StaticResource StringEqualConverter}, ConverterParameter=cash}" Margin="0,0,16,0" Foreground="White"/>
+                            <RadioButton Content="Card" IsChecked="{Binding PaymentMethod, Converter={StaticResource StringEqualConverter}, ConverterParameter=card}" Margin="0,0,16,0" Foreground="White"/>
+                            <RadioButton Content="Mobile" IsChecked="{Binding PaymentMethod, Converter={StaticResource StringEqualConverter}, ConverterParameter=mobile}" Foreground="White"/>
+                        </StackPanel>
+
+                        <!-- Cash Given -->
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Cash Given:" VerticalAlignment="Center" Foreground="#9CA3AF"/>
+                            <TextBox Grid.Column="1" Text="{Binding CashGiven, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Foreground="White" Background="#1A1A1A"/>
+                        </Grid>
+                        <Grid Margin="0,4,0,8"><TextBlock Text="Change:" Foreground="#22C55E" FontWeight="SemiBold"/><TextBlock HorizontalAlignment="Right" Foreground="#22C55E" FontWeight="SemiBold"><Run Text="{Binding CurrencySymbol}"/><Run Text="{Binding Change, StringFormat={}{0:F2}}"/></TextBlock></Grid>
+
+                        <!-- Checkout Button -->
+                        <Button Content="CHECKOUT" Command="{Binding CheckoutCommand}"
+                                Height="44" FontSize="15" FontWeight="Bold"
+                                Background="#D97B35" Foreground="White" BorderThickness="0" Margin="0,4,0,0"
+                                Style="{StaticResource OrangeButton}" IsEnabled="{Binding CanCheckout}"/>
+
+                        <!-- Status -->
+                        <TextBlock Text="{Binding StatusMessage}" Margin="0,8,0,0"
+                                   Foreground="#22C55E" TextWrapping="Wrap" FontSize="12"/>
+
+                        <Button Content="Print Last Receipt" Command="{Binding PrintLastReceiptCommand}"
+                                Margin="0,4,0,0" Style="{StaticResource GhostButton}" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+            </DockPanel>
+        </Border>
+    </Grid>
+
+    <Page.Resources>
+        <local:StringEqualConverter x:Key="StringEqualConverter" xmlns:local="clr-namespace:SpaceBusinessPOS.Converters"/>
+    </Page.Resources>
+</Page>

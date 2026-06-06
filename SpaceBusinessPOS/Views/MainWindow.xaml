@@ -1,0 +1,67 @@
+<Window x:Class="SpaceBusinessPOS.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:views="clr-namespace:SpaceBusinessPOS.Views"
+        Title="Space-Business POS"
+        MinWidth="1200" MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#111111"
+        TextElement.Foreground="{StaticResource TextPrimary}"
+        FontFamily="Segoe UI"
+        WindowState="Maximized">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="#1A1A1A" BorderBrush="#2D2D2D" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <!-- Brand Header -->
+                <StackPanel DockPanel.Dock="Top" Margin="16,20,16,24">
+                    <TextBlock FontSize="22" FontWeight="Black">
+                        <Run Text="SPACE" Foreground="#D97B35"/>
+                        <Run Text="CODE" Foreground="White"/>
+                    </TextBlock>
+                    <TextBlock Text="Space-Business POS" FontSize="11" Foreground="#6B7280" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- Nav Items -->
+                <StackPanel DockPanel.Dock="Top" Margin="8,0">
+                    <Button x:Name="NavPOS" Content="🛒  Point of Sale" Style="{StaticResource NavButton}" Tag="pos" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavProducts" Content="📦  Products" Style="{StaticResource NavButton}" Tag="products" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavCategories" Content="🏷️  Categories" Style="{StaticResource NavButton}" Tag="categories" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavCustomers" Content="👥  Customers" Style="{StaticResource NavButton}" Tag="customers" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavTransactions" Content="🧾  Transactions" Style="{StaticResource NavButton}" Tag="transactions" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavReports" Content="📊  Reports" Style="{StaticResource NavButton}" Tag="reports" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavAccounting" Content="💰  Accounting" Style="{StaticResource NavButton}" Tag="accounting" Click="NavClick" Margin="0,2"/>
+
+                    <Separator Margin="8,12" Background="#2D2D2D"/>
+
+                    <Button x:Name="NavUsers" Content="👤  User Manager" Style="{StaticResource NavButton}" Tag="users" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavReceipt" Content="🖨️  Receipt Design" Style="{StaticResource NavButton}" Tag="receipt" Click="NavClick" Margin="0,2"/>
+                    <Button x:Name="NavSettings" Content="⚙️  Settings" Style="{StaticResource NavButton}" Tag="settings" Click="NavClick" Margin="0,2"/>
+                </StackPanel>
+
+                <!-- User info + Logout -->
+                <Border DockPanel.Dock="Bottom" Margin="12,12" Padding="12" Background="#232323" CornerRadius="8">
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Content="↩" Click="LogoutClick"
+                                Background="Transparent" BorderThickness="0" Foreground="#9CA3AF"
+                                FontSize="16" Cursor="Hand" ToolTip="Logout"/>
+                        <StackPanel>
+                            <TextBlock x:Name="UserNameText" Text="Admin" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock x:Name="UserRoleText" Text="admin" FontSize="11" Foreground="#9CA3AF"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Frame x:Name="MainFrame" Grid.Column="1" NavigationUIVisibility="Hidden" Background="#111111"/>
+    </Grid>
+</Window>
